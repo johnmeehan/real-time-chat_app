@@ -20,5 +20,49 @@
     </div>
     
     <script src="http://127.0.0.1:8080/socket.io/socket.io.js"></script>
+    
+    
+    <script>
+        (function(){
+            //console.log('START');
+            // useing as a selector instead of using jquery 
+            var getNode = function(s) {
+                return document.querySelector(s);
+            },
+            textarea = getNode('.chat textarea'), 
+            chatName = getNode('.chat-name');
+            
+            // Connect to Server
+            try{
+                var socket = io.connect('http://127.0.0.1:8080');
+            }catch(e){
+                // Set status to warn user
+            }
+            
+            
+            if(socket !== undefined){
+                 //console.log('Socket OK');
+                
+                // Listen for keydown in the textarea
+                textarea.addEventListener('keydown', function(event){
+                    var self = this, 
+                        name = chatName.value;
+                    console.log(event.which);
+                    
+                     //Check for Enter key press  AND shift key 
+                    if(event.which === 13 && event.shiftKey === false){
+                        //Use socket to send message
+                        socket.emit('input', {
+                            name: name,
+                            message: self.value 
+                        });
+                        // prevent Default behaviour of keydown 
+                        event.preventDefault();
+                    }
+                
+                });
+            }
+        })();
+    </script>
 </body>
 </html>
