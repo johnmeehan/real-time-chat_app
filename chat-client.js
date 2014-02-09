@@ -1,10 +1,16 @@
+//-----------------------------------------------------
+// Chat Client
+// Connects to Server via Socket.io
+// Retrieve previous chats
+// Listen for Status message updates
+// Sends new Chats to the Server
+//-----------------------------------------------------
 (function(){
-    //console.log('START');
     // useing as a selector instead of using jquery 
     var getNode = function(s) {
         return document.querySelector(s);
     },
-    // Get required nodes (Areas to manipulate)
+    // Get the required nodes (Areas to manipulate)
     messages = getNode('.chat-messages'),
     status = getNode('.chat-status span'),
     textarea = getNode('.chat textarea'), 
@@ -12,8 +18,7 @@
     statusDefault = status.textContent,
     setStatus = function(s){
         status.textContent = s;
-
-        // revert back after a time delay
+        // revert back to default after a time delay
         if (s !== statusDefault){
             var delay = setTimeout(function(){
                 setStatus(statusDefault);
@@ -22,15 +27,14 @@
         }
     };
 
-    console.log(statusDefault);
-
+    //-----------------------------------------------------
     // Connect to Server
     try{
         var socket = io.connect('http://127.0.0.1:8080');
         if(socket !== undefined){
              //console.log('Socket OK');
 
-             // Listen for output
+             // Listen for output-------------------------
              socket.on('output', function(data){
                  //console.log(data);
                  if(data.length){
@@ -47,7 +51,7 @@
                  }
              });
 
-             //Listen for a status
+             //Listen for a status messages ----------------
              socket.on('status', function(data){
                  setStatus((typeof data === 'object') ? data.message : data);
                  // clear the textarea after successfull send 
@@ -56,7 +60,7 @@
                  }
              });
 
-            // Listen for keydown in the textarea
+            // Listen for keydown in the textarea-----------
             textarea.addEventListener('keydown', function(event){
                 var self = this, 
                     name = chatName.value;
