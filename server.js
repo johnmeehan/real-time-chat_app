@@ -9,7 +9,10 @@ mongo.connect('mongodb://127.0.0.1/chat', function(err, db){
     client.on('connection', function(socket){
         //console.log("someone has connected");
         
-        var col = db.collection('messages');
+        var col = db.collection('messages'),
+            sendStatus = function(s){
+                socket.emit('status', s);
+            };
         
         
         //wait for input
@@ -18,11 +21,17 @@ mongo.connect('mongodb://127.0.0.1/chat', function(err, db){
               message = data.message,
               whitespacePattern = /^\s*$/;
             
+            // Check for valid input - not blank
             if (whitespacePattern.test(name)||whitespacePattern.test(message)){
-                console.log("Invalid Input");
+                sendStatus('Name and Message is required');
+                //console.log("Invalid Input");
             }else {
                 col.insert({name: name, message: message}, function(){
-                          console.log("Inserted");   
+                          //console.log("Inserted");   
+                    sendStatus({ 
+                        message: "Message Sent",
+                        clear: true
+                    });
                 });
             }
         });
